@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import { getUrls } from '../../apiCalls';
+import { getUrls, deleteURL } from '../../apiCalls';
 import { setUrls } from '../../actions';
 import './UrlContainer.css';
 
@@ -14,6 +14,16 @@ export class UrlContainer extends Component {
       .then(data => this.props.setUrls(data.urls))
       .catch(err => console.error('Error fetching:', err));
   }
+  handleDeleteUrl = e => {
+    e.preventDefault();
+    deleteURL(e.target.id)
+      .then(data => console.log(data))
+      .catch(error => console.log(error))
+    const newUrls = [...this.props.urls]
+    const urlIndex = newUrls.indexOf(newUrls.find(url => url.id === parseInt(e.target.id)));
+    newUrls.splice(urlIndex, 1);
+    this.props.setUrls(newUrls);
+  }
 
   render() {
     let { urls } = this.props;
@@ -23,6 +33,7 @@ export class UrlContainer extends Component {
           <h3>{url.title}</h3>
           <a href={url.short_url} target="blank">{url.short_url}</a>
           <p>{url.long_url}</p>
+          <button id={url.id} onClick={this.handleDeleteUrl}>Delete URL</button>
         </div>
       )
     });
