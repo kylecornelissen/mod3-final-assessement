@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { addUrl } from '../../apiCalls';
+import { setUrls } from '../../actions';
+
 
 class UrlForm extends Component {
   constructor(props) {
     super();
-    this.props = props;
     this.state = {
       title: '',
       urlToShorten: ''
@@ -14,8 +18,15 @@ class UrlForm extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
+    const newUrl = {long_url: this.state.urlToShorten, title: this.state.title}
+    await addUrl(newUrl)
+      .then(data => {
+        console.log(this.props.urls);
+        this.props.setUrls([...this.props.urls, data])
+      })
+      .catch(error => console.log(error))
     this.clearInputs();
   }
 
@@ -50,4 +61,14 @@ class UrlForm extends Component {
   }
 }
 
-export default UrlForm;
+export const mapStateToProps = ({ urls }) => ({
+  urls
+});
+
+export const mapDispatchToProps = dispatch => {
+  return {
+    setUrls: urls => dispatch(setUrls(urls))
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UrlForm);

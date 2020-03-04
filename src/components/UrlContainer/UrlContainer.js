@@ -6,6 +6,10 @@ import './UrlContainer.css';
 
 export class UrlContainer extends Component {
   componentDidMount() {
+    this.loadUrls();
+  }
+
+  loadUrls = () => {
     getUrls()
       .then(data => this.props.setUrls(data.urls))
       .catch(err => console.error('Error fetching:', err));
